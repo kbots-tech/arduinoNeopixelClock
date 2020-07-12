@@ -18,6 +18,7 @@ Adafruit_NeoPixel backLED(24, 3, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel closetLight(5, 6, NEO_GRB + NEO_KHZ800);
 struct ts t;
 int lampC = 1;
+int lampC2= 1;
 int rMin, gMin, bMin;
 int rHour, gHour, bHour;
 int ran1, ran2, ran3;
@@ -691,10 +692,14 @@ void booleanChange() {
         prevBrightness = strip.getBrightness();
         strip.setBrightness(0);
         strip.show();
+        backLED.setBrightness(0);
+        backLED.show();
       } else {
         onOff = true;
         strip.setBrightness(prevBrightness);
         strip.show();
+        backLED.setBrightness(255);
+        backLED.show();
       }
     } else if (results.value == 16728765 || results.value == 551491815 || results.value == 3380893819) {
       Serial.println("*");
@@ -729,15 +734,7 @@ void booleanChange() {
 
     } else if (results.value == 16730805 || results.value == 3509629087 || results.value == 551487735) {
       Serial.println("0");
-      if (digitalRead(8) == HIGH) {
-        digitalWrite(8, LOW);
-        
-        
-      } else
-        digitalWrite(8,HIGH);
-        for(int i=0; i<24; i++)
-          backLED.setPixelColor(i,0,255,255);
-        backLED.show();
+      lampChange();
 
     } else if (results.value == 16761405 || results.value == 3889222403||results.value==551544855) {
       randomColors();
@@ -760,10 +757,7 @@ void booleanChange() {
     } else if (results.value == 551550720) {
 
     } else if (results.value == 2900054078) {
-      if(backLED.getBrightness()==127){
-        backLED.setBrightness(255);
-      }else
-        backLED.setBrightness(127);
+      justLamp();
     } else if (results.value == 551540775) {
       if (pallete == true)
         pallete = false;
@@ -879,4 +873,62 @@ void stColor() {
 //Code to get proper RGB number
 int aC(int n) {
   return pgm_read_byte(&gamma8[n]);
+}
+
+void lampChange(){
+  Serial.println(lampC);
+  if(lampC==1){
+    digitalWrite(8,HIGH);
+    digitalWrite(7,HIGH);
+  }else if(lampC==2){
+    digitalWrite(8,HIGH);
+    digitalWrite(7,LOW);
+  }else if(lampC==3){
+    digitalWrite(8,LOW);
+    digitalWrite(7,HIGH);
+  }else if(lampC==4){
+    digitalWrite(8,LOW);
+    digitalWrite(7,LOW);
+  }
+  
+  if(lampC==4)
+    lampC=1;
+  else
+    lampC+=1;
+   
+  
+}
+
+void justLamp(){
+  Serial.println(lampC2);
+  if(lampC2==1){
+    digitalWrite(8,HIGH);
+    digitalWrite(7,HIGH);
+    for(int i=0; i<24; i++)
+      backLED.setPixelColor(i,255,255,255);
+    backLED.show();
+  }else if(lampC2==2){
+    digitalWrite(8,HIGH);
+    digitalWrite(7,LOW);
+    for(int i=0; i<24; i++)
+      backLED.setPixelColor(i,0,255,255);
+    backLED.show();
+  }else if(lampC2==3){
+    digitalWrite(8,LOW);
+    digitalWrite(7,HIGH);
+    for(int i=0; i<24; i++)
+      backLED.setPixelColor(i,255,0,0);
+    backLED.show();
+  }else if(lampC2==4){
+    digitalWrite(8,LOW);
+    digitalWrite(7,LOW);
+    backLED.clear();
+    backLED.show();
+  }
+  
+  if(lampC2==4)
+    lampC2=1;
+  else
+    lampC2+=1;
+    
 }
